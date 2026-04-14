@@ -7,6 +7,13 @@
 ## 📸 Capturas
 
 > *(Agrega capturas de pantalla aquí cuando tengas el proyecto corriendo)*
+> <img width="2103" height="664" alt="image" src="https://github.com/user-attachments/assets/754c3212-9d01-47ae-87c0-a4e3ffedb139" />
+> <img width="2093" height="717" alt="image" src="https://github.com/user-attachments/assets/4e517209-f3d2-44b8-8477-c7be41fec9c8" />
+> <img width="2129" height="718" alt="image" src="https://github.com/user-attachments/assets/52f9f30f-edae-4af7-8e66-ba8b21a83666" />
+> <img width="2076" height="637" alt="image" src="https://github.com/user-attachments/assets/895bd18d-392a-44d5-80bc-77a1af290472" />
+>
+
+
 
 ---
 
@@ -98,7 +105,7 @@ http://127.0.0.1:8000
 
 ## 👩‍💻 Autor
 
-Desarrollado por **Samir** para **Mancy Biliana / Semillas VC**
+Desarrollado por **Arath Samir** para **Mancy Biliana / Semillas VC**
 
 ---
 
