@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de Ventas{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header"><h5>Ventas realizadas</h5></div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead><tr><th>ID Venta</th><th>Producto</th><th>Cantidad</th><th>Fecha</th></tr></thead>
+                <tbody>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>{{ venta.id }}</td>
+                        <td>{{ venta.nombre }}</td>
+                        <td>{{ venta.cantidad }}</td>
+                        <td>{{ venta.fecha }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center">No hay ventas registradas aún.{" "}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
