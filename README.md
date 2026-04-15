@@ -31,7 +31,7 @@
 
 | Capa | Tecnología |
 |------|-----------|
-| Backend | [FastAPI](https://fastapi.tiangolo.com/) |
+| Backend | Python, [FastAPI](https://fastapi.tiangolo.com/) |
 | Base de datos | SQLite3 |
 | Frontend | Jinja2 + Bootstrap 5 |
 | Servidor | Uvicorn |
