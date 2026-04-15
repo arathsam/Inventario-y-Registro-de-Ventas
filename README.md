@@ -1,6 +1,6 @@
 # 🌱 Inventario y Registro de Ventas — Semillas VC
 
-> Sistema de gestión de inventario y punto de venta desarrollado con **FastAPI** y **SQLite**, diseñado para el negocio de Semillas VC by Mancy Biliana.
+> Sistema de gestión de inventario y punto de venta desarrollado con **Python**, **FastAPI** y **SQLite**, diseñado para el negocio de Semillas VC by Mancy Biliana.
 
 ---
 
