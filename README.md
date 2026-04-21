@@ -147,7 +147,7 @@ http://127.0.0.1:8000
 
 ---
 
-## 👨‍💻 Autor **Arath Samir Mu Yee**  
+## 👨‍💻 Autor - **Arath Samir Mu Yee**  
 Mechatronics Engineer | Software Developer  
 📧 arathyee09@gmail.com  
 🔗 [LinkedIn](https://www.linkedin.com/in/arath-mu-yee/) · [GitHub](https://github.com/arathsam)
