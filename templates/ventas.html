@@ -1,28 +1,212 @@
 {% extends "base.html" %}
 
 {% block title %}Historial de Ventas{% endblock %}
+{% block nav_historial %}active{% endblock %}
 
 {% block content %}
-<div class="card">
-    <div class="card-header"><h5>Ventas realizadas</h5></div>
+
+{% if msg %}
+<div class="alert alert-success alert-floating alert-dismissible fade show" role="alert">
+    ✅ {{ msg }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger alert-floating alert-dismissible fade show" role="alert">
+    ⚠️ {{ error }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">📋 Historial de Ventas</h4>
+    <span class="text-muted small" id="contadorVentas">
+        {{ ventas | length }} venta(s) registrada(s)
+    </span>
+</div>
+
+<!-- ===== FILTROS EN TIEMPO REAL ===== -->
+<div class="card mb-4">
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead><tr><th>ID Venta</th><th>Producto</th><th>Cantidad</th><th>Fecha</th></tr></thead>
-                <tbody>
-                    {% for venta in ventas %}
-                    <tr>
-                        <td>{{ venta.id }}</td>
-                        <td>{{ venta.nombre }}</td>
-                        <td>{{ venta.cantidad }}</td>
-                        <td>{{ venta.fecha }}</td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="4" class="text-center">No hay ventas registradas aún.{" "}</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="row g-3 align-items-end">
+
+            <!-- Filtro por ID de venta -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">🔢 ID de Venta</label>
+                <input type="number" id="filtroId" class="form-control"
+                       placeholder="Ej: 5" min="1">
+            </div>
+
+            <!-- Filtro por fecha (date picker) -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">📅 Fecha</label>
+                <input type="date" id="filtroFecha" class="form-control">
+            </div>
+
+            <!-- Filtro por cantidad mínima de items en la venta -->
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">📦 Mín. de productos</label>
+                <input type="number" id="filtroCantidad" class="form-control"
+                       placeholder="Ej: 2" min="1">
+            </div>
+
+            <!-- Botón para limpiar todos los filtros -->
+            <div class="col-md-3">
+                <button class="btn btn-outline-secondary w-100" id="btnLimpiarFiltros">
+                    ✖ Limpiar filtros
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
+
+<!-- ===== LISTA DE VENTAS ===== -->
+<div id="listaVentas">
+    {% if ventas %}
+        {% for venta in ventas %}
+        <!--
+            data-id      → para filtrar por ID
+            data-fecha    → para filtrar por fecha (formato YYYY-MM-DD)
+            data-items    → cantidad de productos distintos en esta venta
+        -->
+        <div class="venta-card card mb-3"
+             data-id="{{ venta.id }}"
+             data-fecha="{{ venta.fecha[:10] }}"
+             data-items="{{ venta["items"] | length }}">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Venta #{{ venta.id }}</strong>
+                    <span class="text-muted ms-2 small">{{ venta.fecha }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Badge de estado: verde si completada, gris si cancelada -->
+                    {% if venta.estado == 'completada' %}
+                    <span class="badge bg-success">✅ Completada</span>
+                    {% else %}
+                    <span class="badge bg-secondary">❌ Cancelada</span>
+                    {% endif %}
+
+                    <!-- Total de la venta -->
+                    <span class="badge bg-dark fs-6">${{ "%.2f"|format(venta.total) }}</span>
+
+                    <!-- Botón cancelar (solo si la venta está completada) -->
+                    {% if venta.estado == 'completada' %}
+                    <form action="/ventas/{{ venta.id }}/cancelar" method="post"
+                          onsubmit="return confirm('¿Cancelar la Venta #{{ venta.id }}? Se restaurará el stock.')">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            ✖ Cancelar
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Desglose de productos de esta venta -->
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-center">Cantidad</th>
+                            <th class="text-end">Precio unit.</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in venta['items'] %}
+                        <tr>
+                            <td>{{ item.nombre_producto }}</td>
+                            <td class="text-center">{{ item.cantidad }}</td>
+                            <td class="text-end">${{ "%.2f"|format(item.precio_unitario) }}</td>
+                            <td class="text-end fw-semibold">${{ "%.2f"|format(item.subtotal) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">Total:</td>
+                            <td class="text-end fw-bold text-success">
+                                ${{ "%.2f"|format(venta.total) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center text-muted py-5">
+            <p class="fs-5">No hay ventas registradas aún.</p>
+            <a href="/" class="btn btn-primary">Ir a registrar una venta</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Mensaje cuando ningún filtro tiene resultados -->
+<div id="sinResultados" class="text-center text-muted py-4" style="display:none;">
+    <p class="fs-5">Sin resultados para los filtros aplicados.</p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // ---- Referencias a los inputs de filtro ----
+    const filtroId       = document.getElementById('filtroId');
+    const filtroFecha    = document.getElementById('filtroFecha');
+    const filtroCantidad = document.getElementById('filtroCantidad');
+    const cards          = document.querySelectorAll('.venta-card');
+    const sinResultados  = document.getElementById('sinResultados');
+    const contador       = document.getElementById('contadorVentas');
+
+    /**
+     * aplicarFiltros()
+     * Se ejecuta cada vez que el usuario escribe o cambia algún filtro.
+     * Recorre todas las tarjetas de venta y oculta las que no cumplan
+     * con los criterios actuales de los tres filtros.
+     */
+    function aplicarFiltros() {
+        const valorId       = filtroId.value.trim();
+        const valorFecha    = filtroFecha.value;          // Formato YYYY-MM-DD
+        const valorCantidad = parseInt(filtroCantidad.value) || 0;
+
+        let visibles = 0;
+
+        cards.forEach(card => {
+            const idCoincide = !valorId || card.dataset.id === valorId;
+
+            // data-fecha está en formato YYYY-MM-DD (primeros 10 caracteres del timestamp)
+            const fechaCoincide = !valorFecha || card.dataset.fecha === valorFecha;
+
+            // data-items es la cantidad de productos distintos en la venta
+            const cantidadCoincide = !valorCantidad || parseInt(card.dataset.items) >= valorCantidad;
+
+            const mostrar = idCoincide && fechaCoincide && cantidadCoincide;
+            card.style.display = mostrar ? '' : 'none';
+            if (mostrar) visibles++;
+        });
+
+        // Actualizamos el contador y mostramos mensaje si no hay resultados
+        contador.innerText = `${visibles} venta(s) encontrada(s)`;
+        sinResultados.style.display = visibles === 0 ? '' : 'none';
+    }
+
+    // Escuchamos cambios en los tres filtros
+    filtroId.addEventListener('input', aplicarFiltros);
+    filtroFecha.addEventListener('change', aplicarFiltros);
+    filtroCantidad.addEventListener('input', aplicarFiltros);
+
+    // ---- Limpiar filtros ----
+    document.getElementById('btnLimpiarFiltros').addEventListener('click', () => {
+        filtroId.value       = '';
+        filtroFecha.value    = '';
+        filtroCantidad.value = '';
+        aplicarFiltros(); // Volvemos a mostrar todo
+    });
+</script>
 {% endblock %}

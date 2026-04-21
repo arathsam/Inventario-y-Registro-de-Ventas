@@ -1,4 +1,430 @@
-body { background-color: #f8f9fa; }
-.card { margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.table th { background-color: #e9ecef; }
-.cantidad-input { width: 100px; }
+/*Ahora voy a crear un archivo CSS mejorado con tu paleta de colores aplicada de forma profesional:
+Action: file_editor create /app/styles.css --file-text "
+/* ========================================
+   SISTEMA DE INVENTARIO - PALETA DE COLORES
+   ======================================== */
+
+
+:root {
+    /* Paleta de colores personalizada */
+    --crema-trigo: #F4EBD0;
+    --verde-salvia: #B2C9AB;
+    --tierra-siena: #D6AD94;
+    --azul-niebla: #A2B9BC;
+    --melocoton-suave: #FFD8B1;
+    --antracita-suave: #4E4E4E;
+    
+    /* Variaciones para hover y estados */
+    --verde-salvia-hover: #9db896;
+    --tierra-siena-hover: #c39a81;
+    --azul-niebla-hover: #8da5a8;
+    --melocoton-suave-hover: #ffca99;
+}
+
+/* ========================================
+   ESTILOS GENERALES
+   ======================================== */
+
+body {
+    background-color: var(--crema-trigo);
+    color: var(--antracita-suave);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--antracita-suave);
+}
+
+/* ========================================
+   NAVEGACIÓN
+   ======================================== */
+
+.navbar {
+    background-color: var(--antracita-suave) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.navbar-brand {
+    color: var(--crema-trigo) !important;
+    font-weight: 600;
+}
+
+.nav-link {
+    color: var(--crema-trigo) !important;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--verde-salvia) !important;
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    background-color: var(--verde-salvia) !important;
+    color: var(--antracita-suave) !important;
+    border-radius: 5px;
+}
+
+/* ========================================
+   TARJETAS (CARDS)
+   ======================================== */
+
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(78, 78, 78, 0.1);
+    border: 1px solid rgba(178, 201, 171, 0.3);
+    background-color: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 16px rgba(78, 78, 78, 0.15);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background-color: var(--tierra-siena);
+    color: white;
+    font-weight: 600;
+    border-bottom: 2px solid var(--tierra-siena-hover);
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.card-body {
+    background-color: white;
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
+
+/* Botón Principal - Vender (Verde Salvia) */
+.btn-success,
+.btn-primary {
+    background-color: var(--verde-salvia);
+    border-color: var(--verde-salvia);
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover,
+.btn-primary:hover {
+    background-color: var(--verde-salvia-hover);
+    border-color: var(--verde-salvia-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(178, 201, 171, 0.3);
+}
+
+/* Botón Secundario - Categorías (Tierra de Siena) */
+.btn-warning {
+    background-color: var(--tierra-siena);
+    border-color: var(--tierra-siena);
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-warning:hover {
+    background-color: var(--tierra-siena-hover);
+    border-color: var(--tierra-siena-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(214, 173, 148, 0.3);
+}
+
+/* Botones Outline */
+.btn-outline-secondary {
+    border-color: var(--antracita-suave);
+    color: var(--antracita-suave);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--antracita-suave);
+    border-color: var(--antracita-suave);
+    color: white;
+}
+
+.btn-outline-success {
+    border-color: var(--verde-salvia);
+    color: var(--verde-salvia);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--verde-salvia);
+    border-color: var(--verde-salvia);
+}
+
+/* ========================================
+   TABLAS
+   ======================================== */
+
+.table {
+    color: var(--antracita-suave);
+}
+
+.table thead th,
+.table-dark {
+    background-color: var(--antracita-suave) !important;
+    color: white !important;
+    border-color: var(--antracita-suave) !important;
+}
+
+.table-light {
+    background-color: var(--crema-trigo) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(244, 235, 208, 0.3);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(178, 201, 171, 0.2);
+    transition: all 0.2s ease;
+}
+
+/* ========================================
+   INPUTS Y FILTROS (Azul Niebla)
+   ======================================== */
+
+.form-control,
+.form-select {
+    border-color: var(--azul-niebla);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--azul-niebla-hover);
+    box-shadow: 0 0 0 0.2rem rgba(162, 185, 188, 0.25);
+}
+
+/* Input de búsqueda especial */
+#buscador,
+#filtroId,
+#filtroFecha,
+#filtroCantidad {
+    border: 2px solid var(--azul-niebla);
+    background-color: white;
+}
+
+#buscador:focus,
+#filtroId:focus,
+#filtroFecha:focus,
+#filtroCantidad:focus {
+    border-color: var(--azul-niebla-hover);
+    background-color: rgba(162, 185, 188, 0.05);
+}
+
+/* Input de cantidad */
+.cantidad-input {
+    width: 100px;
+    border: 2px solid var(--azul-niebla);
+}
+
+.cantidad-input:focus {
+    border-color: var(--verde-salvia);
+    box-shadow: 0 0 0 0.2rem rgba(178, 201, 171, 0.25);
+}
+
+/* ========================================
+   ALERTAS
+   ======================================== */
+
+/* Alerta de éxito */
+.alert-success {
+    background-color: var(--verde-salvia);
+    border-color: var(--verde-salvia-hover);
+    color: white;
+}
+
+/* Alerta de error */
+.alert-danger {
+    background-color: #e74c3c;
+    border-color: #c0392b;
+    color: white;
+}
+
+/* Alerta de stock bajo (Melocotón Suave) */
+.alert-warning {
+    background-color: var(--melocoton-suave);
+    border-color: var(--melocoton-suave-hover);
+    color: var(--antracita-suave);
+}
+
+/* ========================================
+   BADGES (INSIGNIAS)
+   ======================================== */
+
+.badge.bg-success {
+    background-color: var(--verde-salvia) !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--melocoton-suave) !important;
+    color: var(--antracita-suave) !important;
+}
+
+.badge.bg-danger {
+    background-color: #e74c3c !important;
+}
+
+.badge.bg-secondary {
+    background-color: var(--azul-niebla) !important;
+}
+
+.badge.bg-dark {
+    background-color: var(--antracita-suave) !important;
+}
+
+/* ========================================
+   MODALES
+   ======================================== */
+
+.modal-header {
+    background-color: var(--tierra-siena);
+    color: white;
+}
+
+.modal-footer {
+    background-color: rgba(244, 235, 208, 0.3);
+}
+
+/* ========================================
+   ESTADOS ESPECIALES
+   ======================================== */
+
+/* Stock bajo - resaltar fila */
+tr[data-stock-bajo=\"true\"] {
+    background-color: rgba(255, 216, 177, 0.2);
+    border-left: 4px solid var(--melocoton-suave);
+}
+
+/* Producto inactivo/oculto */
+.table-secondary {
+    background-color: rgba(162, 185, 188, 0.2) !important;
+}
+
+/* ========================================
+   VENTA CARD (Historial)
+   ======================================== */
+
+.venta-card {
+    border-left: 4px solid var(--verde-salvia);
+    transition: all 0.3s ease;
+}
+
+.venta-card:hover {
+    border-left-color: var(--tierra-siena);
+}
+
+.venta-card .card-header {
+    background-color: white;
+    border-bottom: 2px solid var(--crema-trigo);
+    color: var(--antracita-suave);
+}
+
+/* ========================================
+   UTILIDADES ADICIONALES
+   ======================================== */
+
+.text-muted {
+    color: rgba(78, 78, 78, 0.6) !important;
+}
+
+.fw-semibold {
+    font-weight: 600;
+}
+
+/* Separadores visuales */
+hr {
+    border-color: var(--azul-niebla);
+    opacity: 0.5;
+}
+
+/* Links */
+a {
+    color: var(--verde-salvia);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--verde-salvia-hover);
+    text-decoration: underline;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .cantidad-input {
+        width: 80px;
+    }
+    
+    #buscador {
+        min-width: 100% !important;
+        margin-top: 10px;
+    }
+}
+
+/* ========================================
+   ANIMACIONES SUTILES
+   ======================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert {
+    animation: fadeIn 0.4s ease;
+}
+
+/* ========================================
+   MEJORAS VISUALES ADICIONALES
+   ======================================== */
+
+/* Sombra suave para elementos elevados */
+.shadow-soft {
+    box-shadow: 0 2px 8px rgba(78, 78, 78, 0.08);
+}
+
+/* Borde redondeado consistente */
+.rounded-custom {
+    border-radius: 8px;
+}
+
+/* Hover para filas clickeables */
+tbody tr[data-id]:hover {
+    cursor: pointer;
+    background-color: rgba(178, 201, 171, 0.15);
+}
+
+/* ALERTAS FLOTANTES (NO AFECTAN EL LAYOUT) */
+.alert-floating {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+
+    min-width: 250px;
+    max-width: 400px;
+
+    opacity: 0.95;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+    animation: fadeIn 0.4s ease;
+}

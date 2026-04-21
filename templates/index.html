@@ -1,57 +1,80 @@
 {% extends "base.html" %}
 
-{% block title %}Productos - Ventas{% endblock %}
+{% block title %}Ventas{% endblock %}
+{% block nav_ventas %}active{% endblock %}
 
 {% block content %}
-<!-- Mensajes flash -->
+
 {% if msg %}
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ msg }}
+<div class="alert alert-success alert-floating alert-dismissible fade show" role="alert">
+    ✅ {{ msg }}
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 {% endif %}
 {% if error %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ error }}
+<div class="alert alert-danger alert-floating alert-dismissible fade show" role="alert">
+    ⚠️ {{ error }}
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 {% endif %}
 
-<div class="d-flex justify-content-between mb-3">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarModal">+ Nuevo Producto</button>
-    <div>
-        <button type="button" class="btn btn-success" id="btnVerResumen">🛒 Ver resumen y pagar</button>
-        <button type="button" class="btn btn-secondary" id="btnLimpiar">⟳ Limpiar cantidades</button>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">🛒 Nueva Venta</h4>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success" id="btnVerResumen">
+            🛒 Ver resumen y pagar
+        </button>
+        <button type="button" class="btn btn-outline-secondary" id="btnLimpiar">
+            ⟳ Limpiar
+        </button>
     </div>
 </div>
 
 <div class="card">
-    <div class="card-header"><h5>Lista de Productos</h5></div>
-    <div class="card-body">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Productos disponibles</h5>
+        <!-- Buscador: filtra filas en tiempo real según el nombre del producto -->
+        <input type="text" id="buscador" class="form-control w-auto"
+               placeholder="🔍 Buscar producto..." style="min-width: 220px;">
+    </div>
+    <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-striped table-hover" id="tablaProductos">
-                <thead>
-                    <tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Cantidad a vender</th><th>Editar</th><th>Eliminar</th></tr>
+            <table class="table table-striped table-hover mb-0" id="tablaProductos">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th style="width:130px;">Cantidad</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for producto in productos %}
-                    <tr data-id="{{ producto.id }}" data-nombre="{{ producto.nombre }}" data-precio="{{ producto.precio }}" data-stock="{{ producto.stock }}">
-                        <td>{{ producto.id }}</td>
-                        <td>{{ producto.nombre }}</td>
-                        <td>${{ "%.2f"|format(producto.precio) }}</td>
-                        <td>{{ producto.stock }}</td>
-                        <td>
-                            {% if producto.stock > 0 %}
-                            <input type="number" class="form-control cantidad-input" data-id="{{ producto.id }}" min="0" max="{{ producto.stock }}" value="0" step="1" style="width:100px;">
-                            {% else %}
-                            <span class="text-muted">Agotado</span>
-                            {% endif %}
+                    <!-- data-search guarda el nombre en minúsculas para comparar con el buscador -->
+                    <tr data-id="{{ producto.id }}"
+                        data-nombre="{{ producto.nombre }}"
+                        data-precio="{{ producto.precio }}"
+                        data-stock="{{ producto.stock }}"
+                        data-search="{{ producto.nombre | lower }}">
+                        <td class="align-middle fw-semibold">{{ producto.nombre }}</td>
+                        <td class="align-middle">${{ "%.2f"|format(producto.precio) }}</td>
+                        <td class="align-middle">
+                            <span class="badge bg-secondary">{{ producto.stock }}</span>
                         </td>
-                        <td><button class="btn btn-sm btn-warning btn-editar" data-id="{{ producto.id }}" data-nombre="{{ producto.nombre }}" data-precio="{{ producto.precio }}" data-stock="{{ producto.stock }}">✏️</button></td>
                         <td>
-                            <form action="/productos/{{ producto.id }}/delete" method="post" onsubmit="return confirm('¿Eliminar {{ producto.nombre }}?')">
-                                <button type="submit" class="btn btn-sm btn-danger">🗑️</button>
-                            </form>
+                            <input type="number" class="form-control cantidad-input"
+                                   data-id="{{ producto.id }}"
+                                   min="0" max="{{ producto.stock }}"
+                                   value="0" step="1">
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No hay productos con stock disponible.<br>
+                            <a href="/productos" class="btn btn-sm btn-primary mt-2">
+                                Ir a gestionar productos
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -61,136 +84,170 @@
     </div>
 </div>
 
-<!-- Modal Agregar Producto -->
-<div class="modal fade" id="agregarModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="/productos" method="post">
-                <div class="modal-header"><h5 class="modal-title">✨ Nuevo Producto</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="mb-3"><label class="form-label">Nombre</label><input type="text" name="nombre" class="form-control" required></div>
-                    <div class="mb-3"><label class="form-label">Precio</label><input type="number" step="0.01" name="precio" class="form-control" required></div>
-                    <div class="mb-3"><label class="form-label">Stock</label><input type="number" name="stock" class="form-control" required min="0"></div>
-                </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Editar Producto -->
-<div class="modal fade" id="editarModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="formEditar" method="post">
-                <div class="modal-header"><h5 class="modal-title">✏️ Editar Producto</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <input type="hidden" name="producto_id" id="edit_id">
-                    <div class="mb-3"><label class="form-label">Nombre</label><input type="text" name="nombre" id="edit_nombre" class="form-control" required></div>
-                    <div class="mb-3"><label class="form-label">Precio</label><input type="number" step="0.01" name="precio" id="edit_precio" class="form-control" required></div>
-                    <div class="mb-3"><label class="form-label">Stock</label><input type="number" name="stock" id="edit_stock" class="form-control" required min="0"></div>
-                </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-warning">Actualizar</button></div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Confirmar Venta -->
+<!-- Modal: Confirmar Venta -->
 <div class="modal fade" id="confirmarVentaModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h5 class="modal-title">💰 Confirmar venta</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">💰 Confirmar venta</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
             <div class="modal-body">
+                <!-- Lista de productos seleccionados, se llena con JS -->
                 <div id="listaProductosVenta"></div>
                 <hr>
-                <div class="row"><div class="col-6">Total a pagar:</div><div class="col-6 text-end" id="totalPagar">$0.00</div></div>
-                <div class="row mt-2"><div class="col-6">Monto recibido:</div><div class="col-6"><input type="text" id="montoRecibido" class="form-control" placeholder="$0.00"></div></div>
-                <div class="row mt-2"><div class="col-6">Cambio:</div><div class="col-6 text-end" id="cambio">$0.00</div></div>
+                <div class="row fw-bold fs-5">
+                    <div class="col-6">Total a pagar:</div>
+                    <div class="col-6 text-end text-success" id="totalPagar">$0.00</div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-6 align-self-center">Monto recibido:</div>
+                    <div class="col-6">
+                        <input type="text" id="montoRecibido" class="form-control form-control-lg"
+                               placeholder="$0.00">
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-6">Cambio:</div>
+                    <div class="col-6 text-end fw-bold" id="cambio">$0.00</div>
+                </div>
             </div>
-            <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="button" class="btn btn-success" id="btnConfirmarVenta">✅ Confirmar venta</button></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success btn-lg" id="btnConfirmarVenta" disabled>
+                    ✅ Confirmar venta
+                </button>
+            </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
 <script>
-    document.getElementById('btnLimpiar').addEventListener('click', () => {
-        document.querySelectorAll('.cantidad-input').forEach(input => input.value = 0);
-    });
-
-    const editarModal = new bootstrap.Modal(document.getElementById('editarModal'));
-    document.querySelectorAll('.btn-editar').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.getElementById('edit_id').value = this.dataset.id;
-            document.getElementById('edit_nombre').value = this.dataset.nombre;
-            document.getElementById('edit_precio').value = this.dataset.precio;
-            document.getElementById('edit_stock').value = this.dataset.stock;
-            document.getElementById('formEditar').action = `/productos/${this.dataset.id}/update`;
-            editarModal.show();
+    // ---- Buscador en tiempo real ----
+    // Escucha cada tecla en el input y oculta las filas que no coincidan
+    document.getElementById('buscador').addEventListener('input', function () {
+        const texto = this.value.toLowerCase().trim();
+        document.querySelectorAll('#tablaProductos tbody tr').forEach(row => {
+            // data-search tiene el nombre en minúsculas, comparamos con el texto escrito
+            const nombre = row.dataset.search || '';
+            row.style.display = nombre.includes(texto) ? '' : 'none';
         });
     });
 
+    // ---- Limpiar cantidades y buscador ----
+    document.getElementById('btnLimpiar').addEventListener('click', () => {
+        document.querySelectorAll('.cantidad-input').forEach(input => input.value = 0);
+        document.getElementById('buscador').value = '';
+        // Volvemos a mostrar todas las filas que el buscador pudo haber ocultado
+        document.querySelectorAll('#tablaProductos tbody tr').forEach(r => r.style.display = '');
+    });
+
+    // ---- Ver resumen de la venta ----
     document.getElementById('btnVerResumen').addEventListener('click', () => {
         const items = [];
+
+        // Recorremos todos los inputs de cantidad y guardamos los que sean > 0
         document.querySelectorAll('.cantidad-input').forEach(input => {
             const cantidad = parseInt(input.value);
             if (cantidad > 0) {
-                const row = input.closest('tr');
+                const row = input.closest('tr'); // Fila padre del input
                 items.push({
-                    id: row.dataset.id,
-                    nombre: row.dataset.nombre,
+                    id:       row.dataset.id,
+                    nombre:   row.dataset.nombre,
                     cantidad: cantidad,
-                    precio: parseFloat(row.dataset.precio),
+                    precio:   parseFloat(row.dataset.precio),
                     subtotal: cantidad * parseFloat(row.dataset.precio)
                 });
             }
         });
+
         if (items.length === 0) {
-            alert('No has seleccionado ningún producto para vender.');
+            alert('No has seleccionado ningún producto.');
             return;
         }
+
+        // Construimos el HTML de la lista de productos para el modal
         let html = '<ul class="list-group mb-3">';
         let total = 0;
         items.forEach(item => {
             total += item.subtotal;
-            html += `<li class="list-group-item d-flex justify-content-between">${item.nombre} x ${item.cantidad}<span>$${item.subtotal.toFixed(2)}</span></li>`;
+            html += `<li class="list-group-item d-flex justify-content-between">
+                        <span>${item.nombre} <small class="text-muted">x ${item.cantidad}</small></span>
+                        <span class="fw-bold">$${item.subtotal.toFixed(2)}</span>
+                     </li>`;
         });
         html += '</ul>';
+
+        // Llenamos el modal con los datos calculados
         document.getElementById('listaProductosVenta').innerHTML = html;
         document.getElementById('totalPagar').innerText = `$${total.toFixed(2)}`;
         document.getElementById('montoRecibido').value = '';
         document.getElementById('cambio').innerText = '$0.00';
+        document.getElementById('btnConfirmarVenta').disabled = true;
+
+        // Guardamos los items en una variable global para usarlos al confirmar
         window.itemsPendientes = items;
+
         new bootstrap.Modal(document.getElementById('confirmarVentaModal')).show();
+        // Ponemos foco en el input de monto para agilizar el cobro
+        setTimeout(() => document.getElementById('montoRecibido').focus(), 400);
     });
 
+    // ---- Cálculo de cambio en tiempo real ----
     const montoInput = document.getElementById('montoRecibido');
+
     function actualizarCambio() {
-        const total = parseFloat(document.getElementById('totalPagar').innerText.replace('$', ''));
-        const monto = parseFloat(montoInput.value.replace(/[^0-9.]/g, '')) || 0;
+        const total  = parseFloat(document.getElementById('totalPagar').innerText.replace('$', '')) || 0;
+        const monto  = parseFloat(montoInput.value.replace(/[^0-9.]/g, '')) || 0;
         const cambio = monto - total;
-        document.getElementById('cambio').innerText = `$${cambio.toFixed(2)}`;
+
+        const cambioEl = document.getElementById('cambio');
+        cambioEl.innerText = `$${cambio.toFixed(2)}`;
+        // Verde si el cambio es positivo, rojo si falta dinero
+        cambioEl.className = cambio >= 0
+            ? 'col-6 text-end fw-bold text-success fs-5'
+            : 'col-6 text-end fw-bold text-danger fs-5';
+
+        // Habilitamos el botón solo si hay suficiente monto
         document.getElementById('btnConfirmarVenta').disabled = (cambio < 0);
     }
-    montoInput.addEventListener('blur', function() {
+
+    montoInput.addEventListener('input', actualizarCambio);
+    montoInput.addEventListener('blur', function () {
+        // Al salir del campo, formateamos el número con $
         let num = parseFloat(this.value.replace(/[^0-9.]/g, '')) || 0;
-        this.value = `$${num.toFixed(2)}`;
+        this.value = num > 0 ? `$${num.toFixed(2)}` : '';
         actualizarCambio();
     });
-    montoInput.addEventListener('input', () => actualizarCambio());
 
+    // ---- Confirmar y enviar la venta al servidor ----
     document.getElementById('btnConfirmarVenta').addEventListener('click', () => {
         if (!window.itemsPendientes?.length) return;
+
+        const btn = document.getElementById('btnConfirmarVenta');
+        btn.disabled = true;
+        btn.innerText = 'Procesando...';
+
+        // Construimos el FormData con los campos "cantidad_<id>"
         const formData = new FormData();
-        window.itemsPendientes.forEach(item => formData.append(`cantidad_${item.id}`, item.cantidad));
+        window.itemsPendientes.forEach(item => {
+            formData.append(`cantidad_${item.id}`, item.cantidad);
+        });
+
+        // Enviamos al backend con fetch (sin recargar la página)
         fetch('/ventas/multiples', { method: 'POST', body: formData })
             .then(response => {
+                // Si el servidor redirige (303), seguimos la redirección
                 if (response.redirected) window.location.href = response.url;
-                else return response.text();
             })
-            .catch(err => alert('Error: ' + err));
+            .catch(err => {
+                alert('Error: ' + err);
+                btn.disabled = false;
+                btn.innerText = '✅ Confirmar venta';
+            });
     });
 </script>
 {% endblock %}
